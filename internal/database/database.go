@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/pushbits/server/internal/authentication/credentials"
@@ -49,6 +50,9 @@ func Create(cm *credentials.Manager, dialect, connection string) (*Database, err
 		maxOpenConns = 1
 		db, err = gorm.Open(sqlite.Open(connection), &gorm.Config{})
 	case "mysql":
+		if !strings.Contains(connection, "parseTime=true") {
+			connection += "?parseTime=true"
+		}
 		db, err = gorm.Open(mysql.Open(connection), &gorm.Config{})
 	default:
 		message := "Database dialect is not supported"
@@ -151,4 +155,9 @@ func (d *Database) RepairChannels(dp Dispatcher) error {
 	}
 
 	return nil
+}
+
+// GetSqldb returns the databases sql.DB object
+func (d *Database) GetSqldb() *sql.DB {
+	return d.sqldb
 }

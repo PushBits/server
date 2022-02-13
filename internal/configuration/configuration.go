@@ -26,6 +26,31 @@ type Formatting struct {
 	ColoredTitle bool `default:"false"`
 }
 
+// Authentication holds the settings for the oauth server
+type Authentication struct {
+	Method string `default:"basic"`
+	Oauth  Oauth
+}
+
+// Oauth holds information about the oauth server
+type Oauth struct {
+	Clients  []OauthClient
+	TokenKey string `default:""`
+}
+
+// OauthClient holds information about an oauth client
+type OauthClient struct {
+	ClientID       string `default:"000000"`
+	ClientSecret   string `default:""`
+	ClientRedirect string `default:"http://localhost"`
+}
+
+// Database holds information about the used database type
+type Database struct {
+	Dialect    string `default:"sqlite3"`
+	Connection string `default:"pushbits.db"`
+}
+
 // Matrix holds credentials for a matrix account
 type Matrix struct {
 	Homeserver string `default:"https://matrix.org"`
@@ -40,11 +65,8 @@ type Configuration struct {
 		ListenAddress string `default:""`
 		Port          int    `default:"8080"`
 	}
-	Database struct {
-		Dialect    string `default:"sqlite3"`
-		Connection string `default:"pushbits.db"`
-	}
-	Admin struct {
+	Database Database
+	Admin    struct {
 		Name     string `default:"admin"`
 		Password string `default:"admin"`
 		MatrixID string `required:"true"`
@@ -53,8 +75,9 @@ type Configuration struct {
 	Security struct {
 		CheckHIBP bool `default:"false"`
 	}
-	Crypto     CryptoConfig
-	Formatting Formatting
+	Crypto         CryptoConfig
+	Formatting     Formatting
+	Authentication Authentication
 }
 
 func configFiles() []string {
